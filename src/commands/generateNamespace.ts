@@ -34,15 +34,11 @@ const getPsr4Autoloads = async (
     };
 };
 
-export const getNamespace = async (
-    workspaceFolder: vscode.WorkspaceFolder,
+const resolveNamespaceFromComposer = async (
+    composerPath: vscode.Uri,
+    baseUri: vscode.Uri,
     fileUri: vscode.Uri,
 ): Promise<string | undefined> => {
-    const composerPath = vscode.Uri.joinPath(
-        workspaceFolder.uri,
-        "composer.json",
-    );
-
     const autoloads = await getPsr4Autoloads(composerPath);
 
     const namespaces: Namespace[] = Object.entries(autoloads)
@@ -58,9 +54,7 @@ export const getNamespace = async (
         .sort((a, b) => b.path.length - a.path.length);
 
     const findNamespace = namespaces.find((namespace) =>
-        fileUri.path.startsWith(
-            `${workspaceFolder.uri.path}/${namespace.path}`,
-        ),
+        fileUri.path.startsWith(`${baseUri.path}/${namespace.path}`),
     );
 
     if (!findNamespace) {
@@ -70,10 +64,81 @@ export const getNamespace = async (
     return (
         findNamespace.namespace +
         fileUri.path
-            .replace(`${workspaceFolder.uri.path}/${findNamespace.path}`, "")
+            .replace(`${baseUri.path}/${findNamespace.path}`, "")
             .replace(/\/?[^\/]+$/, "")
             .replace(/\//g, "\\")
     ).replace(/\\$/, "");
+};
+
+// Walks up from `startDir` looking for the nearest composer.json, bounded at
+// `stopAt` (the workspace root) — covers projects where each module ships its own
+// composer.json (e.g. Modules/Blog/composer.json) instead of one root PSR-4 rule
+// covering the whole Modules/ tree.
+const findComposerJsonUpward = async (
+    startDir: vscode.Uri,
+    stopAt: vscode.Uri,
+): Promise<vscode.Uri | undefined> => {
+    let current = startDir;
+
+    while (current.path.startsWith(stopAt.path)) {
+        const candidate = vscode.Uri.joinPath(current, "composer.json");
+
+        try {
+            await vscode.workspace.fs.stat(candidate);
+
+            return candidate;
+        } catch {
+            // No composer.json here, keep walking up.
+        }
+
+        if (current.path === stopAt.path) {
+            break;
+        }
+
+        current = vscode.Uri.joinPath(current, "..");
+    }
+
+    return undefined;
+};
+
+export const getNamespace = async (
+    workspaceFolder: vscode.WorkspaceFolder,
+    fileUri: vscode.Uri,
+): Promise<string | undefined> => {
+    const rootComposerPath = vscode.Uri.joinPath(
+        workspaceFolder.uri,
+        "composer.json",
+    );
+
+    const rootNamespace = await resolveNamespaceFromComposer(
+        rootComposerPath,
+        workspaceFolder.uri,
+        fileUri,
+    );
+
+    if (rootNamespace) {
+        return rootNamespace;
+    }
+
+    // Fall back to the nearest ancestor composer.json, for projects using a
+    // per-module composer.json rather than one root PSR-4 rule for all modules.
+    const moduleComposerPath = await findComposerJsonUpward(
+        vscode.Uri.joinPath(fileUri, ".."),
+        workspaceFolder.uri,
+    );
+
+    if (
+        !moduleComposerPath ||
+        moduleComposerPath.path === rootComposerPath.path
+    ) {
+        return undefined;
+    }
+
+    return resolveNamespaceFromComposer(
+        moduleComposerPath,
+        vscode.Uri.joinPath(moduleComposerPath, ".."),
+        fileUri,
+    );
 };
 
 const getNamespaceReplacement = (
