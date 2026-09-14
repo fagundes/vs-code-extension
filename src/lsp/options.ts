@@ -90,6 +90,9 @@ export function createClientOptions(
             mixDiagnostics: config("mix.diagnostics", true),
             mixHover: config("mix.hover", true),
             mixLink: config("mix.link", true),
+            modelPaths: config<string[]>("model.paths", ["app/Models"]),
+            modulesEnabled: config("modules.enabled", true),
+            modulesRoot: config("modules.root", ""),
             pathsLink: config("paths.link", true),
             pestGenerateDocBlocks: config("pest.generateDocBlocks", true),
             pestHelperFilePath: config(

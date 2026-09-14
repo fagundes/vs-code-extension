@@ -4,6 +4,9 @@ import { GeneratedConfigKey } from "./generated-config";
 type ConfigKey =
     | GeneratedConfigKey
     | "basePath"
+    | "modules.enabled"
+    | "modules.root"
+    | "model.paths"
     | "phpEnvironment"
     | "phpCommand"
     | "memoryLimit"

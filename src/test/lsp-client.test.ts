@@ -62,12 +62,18 @@ suite("Laravel LSP Client Test Suite", () => {
         );
     });
 
-    test("forwards the memory limit to the LSP initialization options", () => {
+    test("forwards project discovery options to the LSP", () => {
         const clientOptions = createClientOptions();
         const initializationOptions = clientOptions.initializationOptions as {
             memoryLimit?: string;
+            modelPaths?: string[];
+            modulesEnabled?: boolean;
+            modulesRoot?: string;
         };
 
         assert.strictEqual(initializationOptions.memoryLimit, "512M");
+        assert.deepStrictEqual(initializationOptions.modelPaths, ["app/Models"]);
+        assert.strictEqual(initializationOptions.modulesEnabled, true);
+        assert.strictEqual(initializationOptions.modulesRoot, "");
     });
 });

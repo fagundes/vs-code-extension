@@ -1075,6 +1075,26 @@
                     "default": "",
                     "markdownDescription": "_Relative_ base path for the Laravel project. This is used to resolve paths in the project. e.g. src, code/backend\n\n_Requires extension reload after changing._"
                 },
+                "Laravel.modules.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Detect and include nwidart/laravel-modules modules in Laravel project discovery."
+                },
+                "Laravel.modules.root": {
+                    "type": "string",
+                    "default": "",
+                    "markdownDescription": "_Relative_ fallback path to the modules directory, such as `Modules`. Leave empty to use automatic detection.\n\n_Requires extension reload after changing._"
+                },
+                "Laravel.model.paths": {
+                    "type": "array",
+                    "default": [
+                        "app/Models"
+                    ],
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Application directories used to discover Eloquent models."
+                },
                 "Laravel.showErrorPopups": {
                     "type": "boolean",
                     "default": false,
