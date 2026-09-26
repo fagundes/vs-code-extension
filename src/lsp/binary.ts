@@ -208,7 +208,10 @@ const performLspBinaryUpdate = async (
     await context.globalState.update(LAST_UPDATE_CHECK_KEY, Date.now());
 
     const downloader = getFileDownloader(context);
-    const release = await downloader.getLatestGitHubRelease("laravel", "lsp");
+    const release = await downloader.getLatestGitHubRelease(
+        "fagundes",
+        "laravel-lsp",
+    );
 
     if (!release) {
         throw new Error("Unable to retrieve the latest Laravel LSP release");
