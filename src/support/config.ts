@@ -7,6 +7,8 @@ type ConfigKey =
     | "modules.enabled"
     | "modules.root"
     | "model.paths"
+    | "mixin.paths"
+    | "eloquent.databaseInspection"
     | "phpEnvironment"
     | "phpCommand"
     | "memoryLimit"

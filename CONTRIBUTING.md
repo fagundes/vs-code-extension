@@ -3,8 +3,8 @@
 To get the extension running locally:
 
 ```
-git clone https://github.com/laravel/vs-code-extension.git
-cd vs-code-extension
+git clone https://github.com/fagundes/vscode-modules-for-laravel.git
+cd vscode-modules-for-laravel
 npm install
 ```
 
@@ -21,9 +21,9 @@ npm install
 
 ## Testing the LSP
 
-The [Laravel LSP](https://github.com/laravel/lsp) is a standalone binary that powers language-server behavior, item detection, and autocomplete.
+The [Laravel LSP fork](https://github.com/fagundes/laravel-lsp) is a standalone binary that powers language-server behavior, item detection, autocomplete, and module discovery.
 
-If you are making changes to the LSP, create an `.env` file at the root of the `vs-code-extension` with the full path to this variable set:
+If you are making changes to the LSP, create an `.env` file at the root of `vscode-modules-for-laravel` with the full path to this variable set:
 
 `LARAVEL_LSP_BINARY_PATH=[FULL PATH TO DIRECTORY]/lsp/server`
 

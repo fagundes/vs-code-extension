@@ -7,7 +7,7 @@ export async function activateExtension(): Promise<void> {
     if (!extensionReady) {
         extensionReady = (async () => {
             const ext = vscode.extensions.getExtension(
-                "laravel.vscode-laravel",
+                "fagundes.vscode-modules-for-laravel",
             );
 
             if (!ext) {

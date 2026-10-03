@@ -1,23 +1,15 @@
-name: Publish VS Code Extension with Changelog Update
+name: Publish VS Code Extension
 
 on:
     release:
-        types: [created]
+        types: [published]
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-    update_changelog:
-        if: ${{ !github.event.release.prerelease }}
-        uses: laravel/.github/.github/workflows/update-changelog.yml@9c15e86fffce728fb6c50ebeae24fd63e98f4d1d # main
-        permissions:
-            contents: write
-
-    publish:
+    verify:
         runs-on: ubuntu-latest
-        needs: update_changelog
-        if: ${{ !github.event.release.prerelease }}
         steps:
             - name: Checkout code
               uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
@@ -28,31 +20,76 @@ jobs:
               uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
               with:
                   node-version: "22"
+                  cache: npm
 
-            - name: Install dependencies
-              run: npm install
+            - name: Set up PHP
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+              with:
+                  php-version: "8.4"
+                  tools: composer:v2
+                  extensions: fileinfo, sqlite3, pdo_sqlite
 
-            - name: Publish Extension
-              env:
-                  VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
-              run: npx vsce publish -p $VSCE_TOKEN --no-git-tag-version
+            - name: Install extension dependencies
+              run: npm ci
 
-    publish_prerelease:
+            - name: Audit production dependencies
+              run: npm audit --omit=dev --audit-level=high
+
+            - name: Set up Laravel fixture
+              run: composer run setup
+              working-directory: src/test/fixtures/laravel-react
+
+            - name: Install Linux UI dependencies
+              run: |
+                  sudo apt-get update
+                  ASOUND_PACKAGE=libasound2
+                  if apt-cache show libasound2t64 >/dev/null 2>&1; then
+                    ASOUND_PACKAGE=libasound2t64
+                  fi
+                  sudo apt-get install -y xvfb libnspr4 libnss3 libgtk-3-0 libxss1 libxshmfence1 libgbm1 "$ASOUND_PACKAGE"
+
+            - name: Run extension test suite
+              run: xvfb-run -a npm test
+
+            - name: Package stable VSIX
+              if: ${{ !github.event.release.prerelease }}
+              run: npx vsce package --out vscode-modules-for-laravel.vsix
+
+            - name: Package pre-release VSIX
+              if: ${{ github.event.release.prerelease }}
+              run: npx vsce package --pre-release --out vscode-modules-for-laravel.vsix
+
+            - name: Upload VSIX artifact
+              uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+              with:
+                  name: vscode-modules-for-laravel-vsix
+                  path: vscode-modules-for-laravel.vsix
+
+    publish:
         runs-on: ubuntu-latest
-        if: ${{ github.event.release.prerelease }}
+        needs: verify
+        permissions:
+            contents: read
+            id-token: write
         steps:
             - name: Checkout code
               uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+              with:
+                  persist-credentials: false
 
             - name: Set up Node.js
               uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
               with:
                   node-version: "22"
+                  cache: npm
 
             - name: Install dependencies
-              run: npm install
+              run: npm ci
 
-            - name: Publish Pre-Release Extension
-              env:
-                  VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
-              run: npx vsce publish --pre-release -p $VSCE_TOKEN --no-git-tag-version
+            - name: Download VSIX artifact
+              uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+              with:
+                  name: vscode-modules-for-laravel-vsix
+
+            - name: Publish extension
+              run: npx vsce publish --oidc --packagePath vscode-modules-for-laravel.vsix

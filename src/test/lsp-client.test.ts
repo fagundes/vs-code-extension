@@ -69,11 +69,83 @@ suite("Laravel LSP Client Test Suite", () => {
             modelPaths?: string[];
             modulesEnabled?: boolean;
             modulesRoot?: string;
+            mixinPaths?: string[];
+            eloquentDatabaseInspection?: boolean;
         };
 
         assert.strictEqual(initializationOptions.memoryLimit, "512M");
-        assert.deepStrictEqual(initializationOptions.modelPaths, ["app/Models"]);
+        assert.deepStrictEqual(initializationOptions.modelPaths, [
+            "app/Models",
+        ]);
         assert.strictEqual(initializationOptions.modulesEnabled, true);
         assert.strictEqual(initializationOptions.modulesRoot, "");
+        assert.deepStrictEqual(initializationOptions.mixinPaths, []);
+        assert.strictEqual(
+            initializationOptions.eloquentDatabaseInspection,
+            true,
+        );
+    });
+
+    test("forwards configured mixin paths to the LSP", async () => {
+        const configuration = vscode.workspace.getConfiguration("Laravel");
+        const originalValue =
+            configuration.inspect<string[]>("mixin.paths")?.workspaceValue;
+
+        await configuration.update(
+            "mixin.paths",
+            ["app/Support/Mixins", "Modules/Shared/Mixin.php"],
+            vscode.ConfigurationTarget.Workspace,
+        );
+
+        try {
+            const clientOptions = createClientOptions();
+            const initializationOptions =
+                clientOptions.initializationOptions as {
+                    mixinPaths?: string[];
+                };
+
+            assert.deepStrictEqual(initializationOptions.mixinPaths, [
+                "app/Support/Mixins",
+                "Modules/Shared/Mixin.php",
+            ]);
+        } finally {
+            await configuration.update(
+                "mixin.paths",
+                originalValue,
+                vscode.ConfigurationTarget.Workspace,
+            );
+        }
+    });
+
+    test("forwards the Eloquent database inspection setting to the LSP", async () => {
+        const configuration = vscode.workspace.getConfiguration("Laravel");
+        const originalValue = configuration.inspect<boolean>(
+            "eloquent.databaseInspection",
+        )?.workspaceValue;
+
+        await configuration.update(
+            "eloquent.databaseInspection",
+            false,
+            vscode.ConfigurationTarget.Workspace,
+        );
+
+        try {
+            const clientOptions = createClientOptions();
+            const initializationOptions =
+                clientOptions.initializationOptions as {
+                    eloquentDatabaseInspection?: boolean;
+                };
+
+            assert.strictEqual(
+                initializationOptions.eloquentDatabaseInspection,
+                false,
+            );
+        } finally {
+            await configuration.update(
+                "eloquent.databaseInspection",
+                originalValue,
+                vscode.ConfigurationTarget.Workspace,
+            );
+        }
     });
 });

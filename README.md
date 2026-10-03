@@ -1,55 +1,135 @@
-## Introduction
+# Modules for Laravel
 
-The Laravel VS Code extension integrates the [Laravel LSP](https://github.com/laravel/lsp) server with Visual Studio Code, providing completions, hover information, diagnostics, links, and code actions for your PHP and Blade files.
+Modules for Laravel is a community-maintained fork of the Laravel VS Code
+extension with first-class support for applications built with
+[`nwidart/laravel-modules`](https://github.com/nWidart/laravel-modules).
 
-The extension supports all Laravel versions currently listed under the [support policy](https://laravel.com/docs/releases#support-policy) and requires PHP 8.2 or later.
+This project is not affiliated with, endorsed by, or sponsored by Laravel LLC.
+Laravel is a trademark of Laravel Holdings Inc. The original extension and
+Laravel LSP are available from the
+[`laravel/vs-code-extension`](https://github.com/laravel/vs-code-extension) and
+[`laravel/lsp`](https://github.com/laravel/lsp) repositories.
 
-## LSP Documentation
+## Features
 
-Documentation for Laravel LSP can be found in the [Laravel LSP repository](https://github.com/laravel/lsp).
+The extension provides the completions, hover information, diagnostics, links,
+code actions, Artisan commands, Pint integration, and test integration from the
+upstream extension. Its LSP fork additionally discovers enabled Laravel modules
+and their models, controllers, providers, configuration, views, Blade
+components, routes, and translations.
+
+Module-aware additions include:
+
+- automatic discovery through `nwidart/laravel-modules`;
+- modern and legacy module directory layouts;
+- module-aware Eloquent model discovery;
+- namespaced views, configuration, routes, and translations;
+- namespace generation from the nearest module `composer.json`;
+- `module:make-model` when creating a model inside a module;
+- external `@mixin` paths;
+- optional Eloquent database inspection.
+
+The extension supports Laravel versions covered by the
+[Laravel support policy](https://laravel.com/docs/releases#support-policy) and
+requires PHP 8.2 or later.
 
 ## Installation
 
-Open the Extensions view in Visual Studio Code, search for "Laravel", and select **Install**.
+Install **Modules for Laravel** from the Visual Studio Marketplace, or build a
+VSIX locally:
+
+```bash
+npm ci
+npm run vsix
+```
+
+This extension is a replacement for `laravel.vscode-laravel`. Do not enable
+both extensions in the same workspace: both start a Laravel language server and
+contribute the same Laravel and Blade integrations.
 
 ## Configuration
 
-No configuration is required by default.
+No configuration is required for projects using the conventional `Modules`
+directory or a registered `nwidart/laravel-modules` repository.
 
-To choose the PHP environment used by the Laravel LSP server, configure `Laravel.phpEnvironment` in your Visual Studio Code settings:
+To set a fallback module root explicitly:
 
 ```json
 {
-    "Laravel.phpEnvironment": "sail"
+    "Laravel.modules.enabled": true,
+    "Laravel.modules.root": "Modules"
 }
 ```
 
-To raise the Laravel LSP server process memory limit (the default is `512M`):
+Additional application model directories can be configured with:
 
 ```json
 {
+    "Laravel.model.paths": ["app/Models", "app/Domain"]
+}
+```
+
+By default, the LSP inspects discovered Eloquent models through `model:show`.
+For large applications, or when database access should be avoided, disable it:
+
+```json
+{
+    "Laravel.eloquent.databaseInspection": false
+}
+```
+
+Classes referenced by `@mixin` outside Composer autoload paths can be loaded
+from files or directories. Relative paths use the Laravel project root:
+
+```json
+{
+    "Laravel.mixin.paths": [
+        "_ide_helper_models.php",
+        "app/Support/Mixins",
+        "Modules/Shared/Support/Mixin.php"
+    ]
+}
+```
+
+Changes to module, model, mixin, or database-inspection settings require a VS
+Code window reload.
+
+The standard PHP environment settings remain available:
+
+```json
+{
+    "Laravel.phpEnvironment": "sail",
     "Laravel.memoryLimit": "1G"
 }
 ```
 
-For the full list of available configuration options, open the extension's settings in Visual Studio Code.
+For the complete list, open the extension settings in VS Code.
 
-## Updates
+## LSP updates
 
-The extension checks for Laravel LSP updates at most once every two hours. To force an update check without waiting, run `Laravel: Update LSP` from the command palette.
+The extension downloads platform-specific binaries from the
+[`fagundes/laravel-lsp`](https://github.com/fagundes/laravel-lsp) releases. It
+checks for updates at most once every two hours. To force a check, run
+`Laravel: Update LSP` from the command palette.
 
-## Contributing
+For development, set `LARAVEL_LSP_BINARY_PATH` before starting VS Code to use a
+local LSP binary.
 
-Thank you for considering contributing to the Laravel VS Code extension! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Support and security
 
-## Code of Conduct
+Report bugs and feature requests in this project's
+[issue tracker](https://github.com/fagundes/vscode-modules-for-laravel/issues). Please do
+not report fork-specific problems to the upstream Laravel repositories.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+For security-sensitive reports, follow this repository's
+[security policy](https://github.com/fagundes/vscode-modules-for-laravel/security/policy).
 
-## Security Vulnerabilities
+## Maintenance
 
-Please review [our security policy](https://github.com/laravel/vs-code-extension/security/policy) on how to report security vulnerabilities.
+See the [publishing guide](docs/PUBLISHING.md) for the release procedure for a
+new LSP binary and for the VS Code extension.
 
 ## License
 
-The Laravel VS Code extension is open-sourced software licensed under the [MIT license](https://opensource.org/license/mit).
+This project is distributed under the [MIT license](LICENSE.md) and preserves
+the attribution of the upstream Laravel VS Code extension.

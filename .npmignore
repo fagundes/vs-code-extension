@@ -1,0 +1,15 @@
+.github/
+.vscode/
+.vscode-test/
+src/
+node_modules/
+out/
+*.vsix
+*.php
+*.ts
+*.map
+.env
+.env.example
+TESTING-MODULES*.md
+vs-code-extension.code-workspace
+vsc-extension-quickstart.md

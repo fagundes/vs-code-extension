@@ -20,3 +20,10 @@ generatable.json
 php-templates
 .env
 .env.example
+*.vsix
+.npmignore
+.prettierignore
+.claude/**
+vs-code-extension.code-workspace
+bosun.json
+icon.png

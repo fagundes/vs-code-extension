@@ -91,6 +91,11 @@ export function createClientOptions(
             mixHover: config("mix.hover", true),
             mixLink: config("mix.link", true),
             modelPaths: config<string[]>("model.paths", ["app/Models"]),
+            eloquentDatabaseInspection: config(
+                "eloquent.databaseInspection",
+                true,
+            ),
+            mixinPaths: config<string[]>("mixin.paths", []),
             modulesEnabled: config("modules.enabled", true),
             modulesRoot: config("modules.root", ""),
             pathsLink: config("paths.link", true),

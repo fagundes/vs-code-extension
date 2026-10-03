@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import { Command } from "@src/artisan/types";
+import { getModuleNameForUri } from "@src/artisan/module";
 import { buildArtisanCommand } from "@src/artisan/builder";
 import { getPathFromOutput } from "@src/support/artisan";
 import { artisan, runArtisanInTerminal } from "@src/support/php";
@@ -33,8 +34,13 @@ export const runArtisanCommand = async (
 
     uri ??= vscode.Uri.joinPath(workspaceFolder.uri);
 
+    const resolvedCommand =
+        command.moduleCommand && getModuleNameForUri(uri, workspaceFolder)
+            ? command.moduleCommand
+            : command;
+
     const artisanCommand = await buildArtisanCommand(
-        command,
+        resolvedCommand,
         uri,
         workspaceFolder,
     );
@@ -55,8 +61,8 @@ export const runArtisanCommand = async (
         return;
     }
 
-    if (command.postRun === "openGeneratedFile") {
-        openGeneratedFile(command, {
+    if (resolvedCommand.postRun === "openGeneratedFile") {
+        openGeneratedFile(resolvedCommand, {
             output,
             workspaceFolder,
             uri,

@@ -1,9 +1,9 @@
 {
-    "name": "vscode-laravel",
-    "publisher": "laravel",
-    "displayName": "Laravel",
-    "description": "Official VS Code extension for Laravel",
-    "version": "2.0.1",
+    "name": "vscode-modules-for-laravel",
+    "publisher": "fagundes",
+    "displayName": "Modules for Laravel",
+    "description": "Community VS Code extension with first-class support for nwidart/laravel-modules.",
+    "version": "0.1.0",
     "engines": {
         "vscode": "^1.89.0"
     },
@@ -11,25 +11,49 @@
         "laravel",
         "php",
         "blade",
-        "eloquent"
+        "eloquent",
+        "modules",
+        "nwidart",
+        "modular"
     ],
-    "icon": "icon.png",
-    "homepage": "https://github.com/laravel/vs-code-extension",
+    "icon": "icon-community.png",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "homepage": "https://github.com/fagundes/vscode-modules-for-laravel#readme",
     "repository": {
         "type": "git",
-        "url": "https://github.com/laravel/vs-code-extension"
+        "url": "https://github.com/fagundes/vscode-modules-for-laravel"
     },
     "bugs": {
-        "url": "https://github.com/laravel/vs-code-extension/issues"
+        "url": "https://github.com/fagundes/vscode-modules-for-laravel/issues"
     },
     "categories": [
+        "Programming Languages",
         "Other"
     ],
+    "galleryBanner": {
+        "color": "#123524",
+        "theme": "dark"
+    },
     "activationEvents": [
         "onLanguage:php",
         "workspaceContains:artisan"
     ],
+    "extensionKind": [
+        "workspace"
+    ],
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": false,
+            "description": "The extension runs PHP and Artisan commands from the current Laravel project."
+        },
+        "virtualWorkspaces": {
+            "supported": false
+        }
+    },
     "main": "./dist/extension.js",
+    "vsce": {
+        "dependencies": false
+    },
     "grammars": [
         {
             "language": "blade",
@@ -1095,6 +1119,19 @@
                     },
                     "description": "Application directories used to discover Eloquent models."
                 },
+                "Laravel.mixin.paths": {
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "string"
+                    },
+                    "markdownDescription": "PHP files or directories containing classes referenced by `@mixin` that are outside Composer autoload. Paths may be relative to the Laravel project or absolute.\n\n_Requires extension reload after changing._"
+                },
+                "Laravel.eloquent.databaseInspection": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Allow the Laravel LSP to inspect every discovered Eloquent model through `model:show`, providing database columns, types, relations, scopes, and related completions. Disable for large applications to avoid database inspection.\n\n_Requires extension reload after changing._"
+                },
                 "Laravel.showErrorPopups": {
                     "type": "boolean",
                     "default": false,
@@ -1508,7 +1545,8 @@
         "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
         "vscode:prepublish": "php build.php && npm run package",
         "package": "npm run check-types && node esbuild.js --production",
-        "installLocal": "vsce package && code --install-extension ./vscode-laravel-$npm_package_version.vsix"
+        "vsix": "npm run package && vsce package",
+        "installLocal": "npm run vsix && code --install-extension ./vscode-modules-for-laravel-$npm_package_version.vsix"
     },
     "devDependencies": {
         "@types/mocha": "^10.0.6",
@@ -1518,17 +1556,17 @@
         "@typescript-eslint/parser": "^8.69.0",
         "@vscode/test-cli": "^0.0.15",
         "@vscode/test-electron": "^3.1.0",
+        "@vscode/vsce": "4.0.0",
         "esbuild": ">=0.28.1",
         "eslint": "^8.57.0",
+        "npm-run-all": "^4.1.5",
         "prettier": "^3.0.0",
         "typescript": "^5.4.5"
     },
     "dependencies": {
-        "axios": "^1.18.0",
-        "extract-zip": "^2.0.1",
-        "npm-run-all": "^4.1.5",
+        "axios": "^1.20.0",
         "rimraf": "^6.0.1",
-        "uuid": "^11.0.3",
+        "uuid": "^11.1.1",
         "vscode-languageclient": "^9.0.1"
     }
 }

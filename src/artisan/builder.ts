@@ -2,6 +2,7 @@ import path from "path";
 import * as vscode from "vscode";
 
 import { getNamespace } from "@src/commands/generateNamespace";
+import { getModuleNameForUri } from "@src/artisan/module";
 import { Argument, ArgumentType, Command, Option } from "./types";
 
 const EndSelection = "End Selection";
@@ -78,6 +79,20 @@ const getUserArguments = async (
 
     for (const argument of commandArguments) {
         let input = undefined;
+        if (argument.type === "moduleName") {
+            const moduleName = getModuleNameForUri(uri, workspaceFolder);
+
+            if (!moduleName) {
+                artisanBuilderUi.showWarningMessage(
+                    "Cannot detect the module from the selected folder",
+                );
+
+                return;
+            }
+
+            userArguments[argument.name] = moduleName;
+            continue;
+        }
 
         while (!input) {
             input = await artisanBuilderUi.showInputBox({

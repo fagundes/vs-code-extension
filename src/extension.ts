@@ -63,6 +63,16 @@ function shouldActivate(): boolean {
 }
 
 export async function activate(context: vscode.ExtensionContext) {
+    if (vscode.extensions.getExtension("laravel.vscode-laravel")) {
+        info(
+            "Not activating Modules for Laravel because the official Laravel extension is enabled",
+        );
+        await vscode.window.showWarningMessage(
+            "Modules for Laravel replaces the official Laravel extension. Disable laravel.vscode-laravel in this workspace, then reload the window.",
+        );
+        return;
+    }
+
     info("Activating Laravel Extension...");
 
     const PHP_LANGUAGE = { scheme: "file", language: "php" };

@@ -1,9 +1,65 @@
 import { Command } from "../types";
 import { forceOption, testOptions } from "@src/artisan/options";
 
+const ModuleModelMakeCommand: Command = {
+    name: "module:make-model",
+    postRun: "openGeneratedFile",
+    arguments: [
+        {
+            name: "name",
+            type: "path",
+            description: "The name of the model",
+        },
+        {
+            name: "module",
+            type: "moduleName",
+        },
+    ],
+    options: [
+        {
+            name: "--all",
+            description: "Create all associated module files",
+        },
+        {
+            name: "--controller",
+            description: "Create an associated controller",
+        },
+        {
+            name: "--fillable",
+            type: "input",
+            description: "Comma-separated fillable attributes",
+        },
+        {
+            name: "--factory",
+            description: "Create a new factory for the model",
+        },
+        {
+            name: "--migration",
+            description: "Create a migration file for the model",
+        },
+        {
+            name: "--request",
+            description: "Create an associated request",
+        },
+        {
+            name: "--resource",
+            description: "Create an associated resource",
+        },
+        {
+            name: "--policy",
+            description: "Create a new policy for the model",
+        },
+        {
+            name: "--seed",
+            description: "Create a new seeder for the model",
+        },
+    ],
+};
+
 export const ModelMakeCommand: Command = {
     name: "make:model",
     postRun: "openGeneratedFile",
+    moduleCommand: ModuleModelMakeCommand,
     arguments: [
         {
             name: "name",

@@ -1,6 +1,23 @@
 # Change Log
 
-All notable changes to the Laravel extension will be documented in this file.
+All notable changes to Modules for Laravel will be documented in this file.
+
+## 0.1.0 - 2026-10-05
+
+### Added
+
+* Laravel Modules project discovery, including configurable module roots.
+* Module-aware model generation through `module:make-model`.
+* Configurable model and mixin paths.
+* Optional Eloquent database inspection.
+* Laravel LSP binaries distributed from the `fagundes/laravel-lsp` community fork.
+
+### Changed
+
+* Established an independent community extension identity and publishing workflow.
+* Added a distinct modular icon and a safeguard against running alongside the official Laravel extension.
+
+The entries below are the inherited history of the upstream Laravel VS Code extension.
 
 ## v2.0.1 - 2026-09-14
 
