@@ -2,6 +2,16 @@
 
 All notable changes to Modules for Laravel will be documented in this file.
 
+## 0.1.1 - 2026-10-07
+
+### Added
+
+* Inertia page discovery for Laravel modules through Laravel LSP `v0.0.31-modules.4`.
+
+### Changed
+
+* Updated the extension icon with transparent outer corners.
+
 ## 0.1.0 - 2026-10-05
 
 ### Added

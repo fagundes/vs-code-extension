@@ -3,7 +3,7 @@
     "publisher": "fagundes",
     "displayName": "Modules for Laravel",
     "description": "Community VS Code extension with first-class support for nwidart/laravel-modules.",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "engines": {
         "vscode": "^1.89.0"
     },
